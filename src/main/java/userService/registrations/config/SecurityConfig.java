@@ -18,9 +18,12 @@ import com.nimbusds.jose.proc.SecurityContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,6 +39,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
@@ -50,6 +54,7 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import userService.registrations.security.authService.JpaRegisteredClientRepository;
 import userService.registrations.security.customization.CustomUsersDetails;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -58,6 +63,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
     private final KeyPair keyPair;
 
     public SecurityConfig() {
@@ -104,7 +111,7 @@ public class SecurityConfig {
 
         http
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(withDefaults())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
                                 .oidc(withDefaults())    // Enable OpenID Connect 1.0
@@ -115,6 +122,9 @@ public class SecurityConfig {
                 )
                 // Redirect to the login page when not authenticated from the
                 // authorization endpoint
+//                .oauth2Login(oauth->
+//                        oauth.defaultSuccessUrl("/hello",true))
+
                 .exceptionHandling((exceptions) -> exceptions
                         .defaultAuthenticationEntryPointFor(
                                 new LoginUrlAuthenticationEntryPoint("/login"),
@@ -129,8 +139,10 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
             throws Exception {
+        System.out.println("REQUEST RECEIVED PERMISSIONS");
         http
                 .csrf().disable()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(
 
@@ -138,10 +150,17 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/oauth2/**",
                                 "/api/user/me",
+                                "/.well-known/**",
+                                "/error",
                                 "/client/register",
+                                "/client/updateRegisterClient/**",
                                 "/api/user/createUser",
-                                "/roles/createRole"
+                                "/roles/createRole",
+                                "/api/debug/cors",
+                                "/api/user/StudentSignUp",
+                                "/api/user/allUsers"
                         ).permitAll()
+                        .requestMatchers("/api/user/ConfirmStudentSignUp/otp/**").permitAll()
                         .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
                         .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
 
@@ -149,25 +168,31 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/session-info").authenticated()
                         .anyRequest().authenticated()
                 )
+//                .oauth2Login(oauth2 -> oauth2
+//                        .defaultSuccessUrl(frontendUrl + "/dashboard", true)
+
                 // Form login handles the redirect to the login page from the
                 // authorization server filter chain
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                .formLogin(withDefaults());
-//                .formLogin(form->form
-//                        .loginProcessingUrl("/api/auth/login")
-//                        .usernameParameter("email")
-//                        .passwordParameter("password")
-//                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
-//                        .failureHandler(authenticationFailureHandler())
-//                        .permitAll())
-//                .logout(logout->logout.logoutUrl("/auth/auth/logout")
-//                        .logoutSuccessHandler(logoutSuccessHandler())
-//                        .permitAll()
-//                )
-//                .sessionManagement(session->session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+//                .oauth2Login(oauth->oauth.defaultSuccessUrl("/hello",true));
+//                .formLogin(withDefaults());
+                .formLogin(form->form
+                        .loginProcessingUrl("/api/auth/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
+                        .failureHandler(authenticationFailureHandler())
+                        .permitAll())
+                .logout(logout->logout.logoutUrl("/auth/auth/logout")
+                        .logoutSuccessHandler(logoutSuccessHandler())
+                                .permitAll())
+                        .sessionManagement(session->session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+
 
         return http.build();
     }
@@ -181,7 +206,9 @@ public class SecurityConfig {
                                                 Authentication authentication) throws IOException, ServletException {
                 CustomUsersDetails usersDetals= (CustomUsersDetails) authentication.getPrincipal();
              String JwtToken= jwtTokenService.generateToken(usersDetals);
+
              response.setStatus(HttpStatus.OK.value());
+
                 response.setContentType("application/json;charset=UTF-8");
              String responseBody=String.format(
                      "{\"message\":\"Login Successful\", \"token\":\"%s\", \"user\": {\"id\":\"%s\", \"email\":\"%s\", \"username\":\"%s\"}}",
@@ -218,14 +245,27 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        System.out.println("REQUEST RECEIVED SPRING SECURITY CORS");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "http://127.0.0.1:5173",
-                "https://oauth.pstmn.io"
+                "https://oauth.pstmn.io",
+                "https://unvocalized-irretrievably-roman.ngrok-free.dev",
+                "https://scpms-frontend.onrender.com"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList( "Authorization",
+                "Content-Type",
+                "X-Requested-With",
+                "Accept",
+                "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"));
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type"
+        ));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
