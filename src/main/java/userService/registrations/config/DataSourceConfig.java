@@ -20,7 +20,7 @@ public class DataSourceConfig {
         System.out.println("Connecting to: " + jdbcUrl);
         config.setJdbcUrl(jdbcUrl);
         config.setUsername("root");
-        config.setPassword("bunty");
+        config.setPassword("bzBJhmqIzMybcHzxBORnXmmLYafEotMm");
         config.setConnectionTimeout(30000);
         config.setMaximumPoolSize(5);
 
