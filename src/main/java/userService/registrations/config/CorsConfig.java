@@ -22,7 +22,6 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://127.0.0.1:5173");
-//        config.addAllowedOrigin("https://scpms-frontend.onrender.com");
         config.addAllowedOrigin("https://unvocalized-irretrievably-roman.ngrok-free.dev");
         config.addAllowedOrigin("https://scpms-frontend.onrender.com");
         config.addAllowedHeader("*");
