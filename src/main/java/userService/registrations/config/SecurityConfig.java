@@ -62,15 +62,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-<<<<<<< HEAD
+
 //
 //    @Value("${app.frontend.url}")
 //    private String frontendUrl;
-=======
 
-    @Value("${app.frontend.url}")
-    private String frontendUrl;
->>>>>>> 38d1af034252e0e68a329c71abccb91e138da6ee
     private final KeyPair keyPair;
 
     public SecurityConfig() {
@@ -148,11 +144,8 @@ public class SecurityConfig {
         System.out.println("REQUEST RECEIVED PERMISSIONS");
         http
                 .csrf().disable()
-<<<<<<< HEAD
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-=======
+
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
->>>>>>> 38d1af034252e0e68a329c71abccb91e138da6ee
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(
 
@@ -188,7 +181,7 @@ public class SecurityConfig {
                 )
 
 //                .oauth2Login(oauth->oauth.defaultSuccessUrl("/hello",true));
-<<<<<<< HEAD
+
                 .formLogin(withDefaults());
 //                .formLogin(form->form
 //                        .loginProcessingUrl("/api/auth/login")
@@ -202,21 +195,6 @@ public class SecurityConfig {
 //                                .permitAll())
 //                        .sessionManagement(session->session
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-=======
-//                .formLogin(withDefaults());
-                .formLogin(form->form
-                        .loginProcessingUrl("/api/auth/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
-                        .failureHandler(authenticationFailureHandler())
-                        .permitAll())
-                .logout(logout->logout.logoutUrl("/auth/auth/logout")
-                        .logoutSuccessHandler(logoutSuccessHandler())
-                                .permitAll())
-                        .sessionManagement(session->session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
->>>>>>> 38d1af034252e0e68a329c71abccb91e138da6ee
 
 
 
@@ -256,7 +234,7 @@ public class SecurityConfig {
         };
     }
 
-<<<<<<< HEAD
+
 //    @Bean
 //    public AuthenticationFailureHandler authenticationFailureHandler() {
 //        return new SimpleUrlAuthenticationFailureHandler() {
@@ -300,7 +278,7 @@ public class SecurityConfig {
 //        source.registerCorsConfiguration("/**", configuration);
 //        return source;
 //    }
-=======
+
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return new SimpleUrlAuthenticationFailureHandler() {
@@ -344,7 +322,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
->>>>>>> 38d1af034252e0e68a329c71abccb91e138da6ee
+
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {

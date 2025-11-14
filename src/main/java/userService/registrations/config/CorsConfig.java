@@ -12,10 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
-    @Value("${app.frontend.url}")
-    private String frontendUrl;
 
-<<<<<<< HEAD
 
     // Method 1b: Using CorsFilter (more flexible)
 //    @Bean
@@ -37,7 +34,7 @@ public class CorsConfig {
 //        System.out.println("REQUEST RECEIVED"+config);
 //        return new CorsFilter(source);
 //    }
-=======
+
     // Method 1a: Using WebMvcConfigurer (for Spring MVC)
 //    @Bean
 //    public WebMvcConfigurer corsConfigurer() {
@@ -89,5 +86,5 @@ public class CorsConfig {
         System.out.println("REQUEST RECEIVED"+config);
         return new CorsFilter(source);
     }
->>>>>>> 38d1af034252e0e68a329c71abccb91e138da6ee
+
 }
