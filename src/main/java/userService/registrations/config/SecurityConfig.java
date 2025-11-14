@@ -63,9 +63,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
-//
-//    @Value("${app.frontend.url}")
-//    private String frontendUrl;
 
     private final KeyPair keyPair;
 
