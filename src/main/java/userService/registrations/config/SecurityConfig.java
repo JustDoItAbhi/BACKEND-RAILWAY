@@ -298,7 +298,8 @@ public class SecurityConfig {
                 "http://127.0.0.1:5173",
                 "https://oauth.pstmn.io",
                 "https://unvocalized-irretrievably-roman.ngrok-free.dev",
-                "https://scpms-frontend.onrender.com"
+                "https://scpms-frontend.onrender.com",
+                "https://backend-railway-production-49cf.up.railway.app"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList( "Authorization",

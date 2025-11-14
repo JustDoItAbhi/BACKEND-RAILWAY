@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "https://unvocalized-irretrievably-roman.ngrok-free.dev", allowCredentials = "true")
+@CrossOrigin(origins = "https://backend-railway-production-49cf.up.railway.app", allowCredentials = "true")
 public class AuthController {
 //    @PostMapping("/login")
 //    public ResponseEntity<?> login(@RequestParam String email,

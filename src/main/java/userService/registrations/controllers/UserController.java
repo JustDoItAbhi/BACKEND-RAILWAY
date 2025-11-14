@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "https://unvocalized-irretrievably-roman.ngrok-free.dev", allowCredentials = "true")
+@CrossOrigin(origins = "https://backend-railway-production-49cf.up.railway.app", allowCredentials = "true")
 public class UserController {
     @Autowired
     private UserService userService;

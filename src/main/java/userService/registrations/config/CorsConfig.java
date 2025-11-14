@@ -24,6 +24,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://127.0.0.1:5173");
         config.addAllowedOrigin("https://unvocalized-irretrievably-roman.ngrok-free.dev");
         config.addAllowedOrigin("https://scpms-frontend.onrender.com");
+        config.addAllowedOrigin("https://backend-railway-production-49cf.up.railway.app");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
