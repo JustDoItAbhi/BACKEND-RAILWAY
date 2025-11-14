@@ -4,17 +4,43 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "https://unvocalized-irretrievably-roman.ngrok-free.dev", allowCredentials = "true")
 public class AuthController {
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestParam String email,
+//                                   @RequestParam String password,
+//                                   HttpServletRequest request) {
+//        try {
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//            if (authentication != null && authentication.isAuthenticated()) {
+//                // User is already authenticated (likely via form login)
+//                Map<String, Object> response = new HashMap<>();
+//                response.put("message", "Login successful");
+//                response.put("authenticated", true);
+//                response.put("user", authentication.getPrincipal());
+//
+//                return ResponseEntity.ok(response);
+//            } else {
+//                // Authentication failed
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                        .body("{\"error\": \"Invalid credentials\", \"authenticated\": false}");
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("{\"error\": \"Login failed: " + e.getMessage() + "\"}");
+//        }
+//    }
 
     @GetMapping("/user")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {

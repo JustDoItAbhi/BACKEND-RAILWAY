@@ -21,7 +21,6 @@ public class HtmlEmailService {
         helper.setSubject(subject);
         helper.setText(htmlContent, true); // true means HTML
 //        helper.addAttachment("invoice.pdf", new File("path/to/invoice.pdf"));
-
         mailSender.send(mimeMessage);
     }
 }

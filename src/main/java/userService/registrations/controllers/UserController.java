@@ -2,6 +2,7 @@ package userService.registrations.controllers;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -14,6 +15,10 @@ import userService.registrations.dtos.SignUpRequestDto;
 import userService.registrations.dtos.UpdateUserDto;
 import userService.registrations.dtos.reponseDtos.OtpResponseDto;
 import userService.registrations.dtos.reponseDtos.UserResponseDto;
+import userService.registrations.dtos.student.StudentOtpRequest;
+import userService.registrations.dtos.student.StudentSingupReqDto;
+import userService.registrations.dtos.teacherDto.TeacherUserRequestDto;
+import userService.registrations.dtos.teacherDto.TeacherUserResponseDto;
 import userService.registrations.security.customization.CustomUsersDetails;
 import userService.registrations.services.UserService;
 
@@ -22,7 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
-//@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = "https://unvocalized-irretrievably-roman.ngrok-free.dev", allowCredentials = "true")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -44,13 +49,23 @@ public class UserController {
         return ResponseEntity.status(401).body("{\"authenticated\": false}");
     }
 
-//    @GetMapping("/")
-//    public String home() {
-//        return "OAuth2 Server is running!";
-//    }
+    @GetMapping("/")
+    public String home() {
+        return "OAuth2 Server is running!";
+    }
     @GetMapping("/error")
     public String error() {
         return "Error page";
+    }
+
+    @PostMapping("/StudentSignUp")
+    public ResponseEntity<String> sendOtpToStudentEmail(@RequestBody StudentOtpRequest request){
+        return ResponseEntity.ok(userService.studentSignup(request.getEmail(), request.getRoles()));
+    }
+    @PostMapping("/ConfirmStudentSignUp/otp")
+    public ResponseEntity<String> confirmstudentOtp(@RequestBody StudentSingupReqDto dto){
+        System.out.println(dto.getEmail()+" AND "+dto.getOtp());
+        return ResponseEntity.ok(userService.confirmStudentOtp(dto.getEmail(), dto.getOtp()));
     }
 
     @PostMapping("/createUser")
@@ -141,5 +156,9 @@ public class UserController {
         }
 
         return ResponseEntity.ok(sessionInfo);
+    }
+    @PostMapping("/confirmTeacherRole")
+    public ResponseEntity<TeacherUserResponseDto> setTeacherRole(@RequestBody TeacherUserRequestDto dto){
+        return ResponseEntity.ok(userService.approveTeacherSignUp(dto));
     }
 }
