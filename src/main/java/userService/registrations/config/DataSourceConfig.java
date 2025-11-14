@@ -15,8 +15,8 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         HikariDataSource dataSource = new HikariDataSource();
 
-        // Get values from environment with fallbacks
-        String host = getEnv("MYSQLHOST", "localhost");
+        // Use Railway's internal hostname format
+        String host = getEnv("MYSQLHOST", "containers-us-west-190.railway.app");
         String port = getEnv("MYSQLPORT", "3306");
         String database = getEnv("MYSQLDATABASE", "railway");
         String username = getEnv("MYSQLUSER", "root");
@@ -24,6 +24,9 @@ public class DataSourceConfig {
 
         String jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database +
                 "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+
+        System.out.println("Connecting to: " + jdbcUrl);
+        System.out.println("Username: " + username);
 
         dataSource.setJdbcUrl(jdbcUrl);
         dataSource.setUsername(username);
@@ -35,6 +38,7 @@ public class DataSourceConfig {
 
     private String getEnv(String key, String defaultValue) {
         String value = System.getenv(key);
+        System.out.println("Env " + key + ": " + (value != null ? value : "null"));
         return value != null ? value : defaultValue;
     }
 }
