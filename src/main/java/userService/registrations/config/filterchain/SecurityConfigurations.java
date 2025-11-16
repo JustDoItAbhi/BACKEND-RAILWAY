@@ -232,10 +232,13 @@ public class SecurityConfigurations {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                .formLogin(Customizer.withDefaults())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .formLogin(form -> form
+                        .loginPage("/login") // Specify custom login page
+                        .permitAll()
                 );
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                );
 
         return http.build();
     }
