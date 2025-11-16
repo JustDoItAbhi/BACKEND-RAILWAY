@@ -179,19 +179,19 @@ public class SecurityConfig {
 
 //                .oauth2Login(oauth->oauth.defaultSuccessUrl("/hello",true));
 
-                .formLogin(withDefaults());
-//                .formLogin(form->form
-//                        .loginProcessingUrl("/api/auth/login")
-//                        .usernameParameter("email")
-//                        .passwordParameter("password")
-//                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
-////                        .failureHandler(authenticationFailureHandler())
-//                        .permitAll())
-//                .logout(logout->logout.logoutUrl("/auth/auth/logout")
-//                        .logoutSuccessHandler(logoutSuccessHandler())
-//                                .permitAll())
-//                        .sessionManagement(session->session
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//                .formLogin(withDefaults());
+                .formLogin(form->form
+                        .loginProcessingUrl("/api/auth/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
+                        .failureHandler(authenticationFailureHandler())
+                        .permitAll())
+                .logout(logout->logout.logoutUrl("/auth/auth/logout")
+                        .logoutSuccessHandler(logoutSuccessHandler())
+                                .permitAll())
+                        .sessionManagement(session->session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
 
@@ -244,37 +244,7 @@ public class SecurityConfig {
 //            }
 //        };
 //    }
-//
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        System.out.println("REQUEST RECEIVED SPRING SECURITY CORS");
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList(
-//                "http://localhost:5173",
-//                "http://127.0.0.1:5173",
-//                "https://oauth.pstmn.io",
-//                "https://unvocalized-irretrievably-roman.ngrok-free.dev",
-//                "https://scpms-frontend.onrender.com"
-//        ));
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(Arrays.asList( "Authorization",
-//                "Content-Type",
-//                "X-Requested-With",
-//                "Accept",
-//                "Origin",
-//                "Access-Control-Request-Method",
-//                "Access-Control-Request-Headers"));
-//        configuration.setExposedHeaders(Arrays.asList(
-//                "Authorization",
-//                "Content-Type"
-//        ));
-//        configuration.setAllowCredentials(true);
-//        configuration.setMaxAge(3600L);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
+
 
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {

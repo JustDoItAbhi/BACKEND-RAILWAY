@@ -1,5 +1,8 @@
 package userService.registrations.services;
 
+import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import userService.registrations.dtos.RolesRequestDto;
 import userService.registrations.dtos.reponseDtos.RoleResponseDto;
@@ -10,11 +13,15 @@ import java.util.Optional;
 
 @Service
 public class RoleServicesImpl implements RoleService{
-    private final RolesRepository rolesRepository;
-    public RoleServicesImpl (RolesRepository repository){
-        rolesRepository=repository;
-    }
+    @Autowired
+    private  RolesRepository rolesRepository;
+    private  EntityManagerFactory entityManagerFactory;
 
+    public RoleServicesImpl(RolesRepository rolesRepository,
+                           EntityManagerFactory entityManagerFactory) {
+        this.rolesRepository = rolesRepository;
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     @Override
     public RoleResponseDto createRoles(RolesRequestDto dto) {
@@ -27,7 +34,6 @@ public class RoleServicesImpl implements RoleService{
         rolesRepository.save(roles);
         return roleMapper(roles);
     }
-
     private RoleResponseDto roleMapper(Roles roles){
         RoleResponseDto dto=new RoleResponseDto();
         dto.setRoles(roles.getRoleName());
