@@ -95,6 +95,16 @@ public class SubjectServiceImpl implements SubjectService{
         return responseDtos;
     }
 
+    @Override
+    public List<SubjectResponseDto> getAllSubjects() {
+        List<Subjects>subjects=subjectRepository.findAll();
+        List<SubjectResponseDto>responseDtos=new ArrayList<>();
+        for(Subjects subjects1:subjects){
+            responseDtos.add(fromEntity(subjects1));
+        }
+        return responseDtos;
+    }
+
 
     private SubjectResponseDto fromEntity(Subjects subjects){
         SubjectResponseDto dto=new SubjectResponseDto();

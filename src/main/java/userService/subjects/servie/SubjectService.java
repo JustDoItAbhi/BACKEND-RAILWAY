@@ -14,4 +14,6 @@ public interface SubjectService {
     SubjectResponseDto getSubhectByYear(String Year);
     SubjectResponseDto updateSubject(long id,SubjectRequestDto dto);
     List<SubjectResponseDto> transferAllListOfStubjecsFromCsvFile(MultipartFile file) throws IOException;
+    List<SubjectResponseDto> getAllSubjects() ;
+
 }
