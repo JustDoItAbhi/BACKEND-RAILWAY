@@ -130,7 +130,7 @@ public class SecurityConfigurations {
     // FIXED: Local mode should use form login (default)
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production", matchIfMissing = true)
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local", matchIfMissing = true)
     public SecurityFilterChain localSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading LOCAL security configuration (Form Login + OAuth2 Resource Server)");
         return buildFormLoginSecurity(http);
@@ -138,7 +138,7 @@ public class SecurityConfigurations {
 
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local")
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production")
     public SecurityFilterChain productionSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading PRODUCTION security configuration (OAuth2 Resource Server Only)");
         return buildOAuth2SecurityForLocal(http);
@@ -207,9 +207,7 @@ public class SecurityConfigurations {
                         .anyRequest().authenticated()
                 )
                 // Form Login for local development
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                )
+
                 .formLogin(form->form
                         .loginProcessingUrl("/api/auth/login")
                         .usernameParameter("email")
@@ -217,7 +215,11 @@ public class SecurityConfigurations {
                         .successHandler(authenticationSuccessHandler())
                         .failureHandler(authenticationFailureHandler())
                         .permitAll())
-                .logout(logout->logout.logoutUrl("/auth/auth/logout")
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(logoutSuccessHandler())
                         .permitAll()
                 )
