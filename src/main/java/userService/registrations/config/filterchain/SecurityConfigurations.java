@@ -5,7 +5,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +56,8 @@ import java.util.UUID;
 public class SecurityConfigurations {
 
     @Autowired
-    private CorsConfigurationSource corsConfigurationSource;
+    private JwtTokenService jwtTokenService;
 
-    // Fixed KeyPair generation - removed from constructor
     @Bean
     public KeyPair keyPair() {
         return generateRsaKey();
@@ -86,12 +84,6 @@ public class SecurityConfigurations {
     }
 
     @Bean
-    public JwtTokenService jwtTokenService(RSAPrivateKey privateKey) {
-        return new JwtTokenService(privateKey);
-    }
-
-
-    @Bean
     public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = new RSAKey.Builder(rsaPublicKey())
                 .privateKey(rsaPrivateKey())
@@ -103,8 +95,7 @@ public class SecurityConfigurations {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-            throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer();
 
@@ -113,10 +104,20 @@ public class SecurityConfigurations {
                 .cors(Customizer.withDefaults())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
-                                .oidc(Customizer.withDefaults()) // Enable OpenID Connect 1.0
+                                .oidc(Customizer.withDefaults())
                 )
-                .authorizeHttpRequests((authorize) ->
-                        authorize.anyRequest().authenticated()
+                .authorizeHttpRequests(authz -> authz
+                        .anyRequest().authenticated()
+                )
+                // ADD FORM LOGIN TO AUTHORIZATION SERVER
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/api/auth/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler(authenticationSuccessHandler())
+                        .failureHandler(authenticationFailureHandler())
+                        .permitAll()
                 )
                 .exceptionHandling((exceptions) -> exceptions
                         .defaultAuthenticationEntryPointFor(
@@ -128,26 +129,28 @@ public class SecurityConfigurations {
         return http.build();
     }
 
+    // FIXED: Local mode should use form login (default)
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production", matchIfMissing = true)
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local", matchIfMissing = true)
     public SecurityFilterChain localSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading LOCAL security configuration (Form Login + OAuth2 Resource Server)");
-        return buildProductionLoginSecurity(http);
+        return buildFormLoginSecurity(http);
     }
 
+    // FIXED: Production mode should use OAuth2 only
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local")
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production")
     public SecurityFilterChain productionSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading PRODUCTION security configuration (OAuth2 Resource Server Only)");
         return buildOAuth2Security(http);
     }
 
-    private SecurityFilterChain buildProductionLoginSecurity(HttpSecurity http) throws Exception {
+    private SecurityFilterChain buildFormLoginSecurity(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/login",
@@ -171,19 +174,27 @@ public class SecurityConfigurations {
                         .requestMatchers("/api/user/session-info").authenticated()
                         .anyRequest().authenticated()
                 )
-                // Form Login for local development (generates JWT tokens)
-                .formLogin(form->form
+                // Form Login for local development
+                .formLogin(form -> form
                         .loginProcessingUrl("/api/auth/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
+                        .successHandler(authenticationSuccessHandler())
                         .failureHandler(authenticationFailureHandler())
-                        .permitAll())
-                .logout(logout->logout.logoutUrl("/auth/auth/logout")
+                        .permitAll()
+                )
+                // OAuth2 Resource Server to validate JWT tokens
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout") // FIXED: was "/auth/auth/logout"
                         .logoutSuccessHandler(logoutSuccessHandler())
-                                .permitAll())
-                        .sessionManagement(session->session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
         return http.build();
     }
@@ -191,7 +202,7 @@ public class SecurityConfigurations {
     private SecurityFilterChain buildOAuth2Security(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/login",
@@ -211,19 +222,17 @@ public class SecurityConfigurations {
                                 "/api/subject/**"
                         ).permitAll()
                         .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
-                        .requestMatchers("/api/user/createUser").permitAll()
                         .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
                         .requestMatchers("/api/user/session-info").authenticated()
                         .anyRequest().authenticated()
                 )
-                //
+                // Production - Only OAuth2 Resource Server (NO form login)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                .formLogin(Customizer.withDefaults());
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                );
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
         return http.build();
     }
@@ -254,22 +263,23 @@ public class SecurityConfigurations {
     }
 
     @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler(JwtTokenService jwtTokenService) {
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return new AuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request,
                                                 HttpServletResponse response,
-                                                Authentication authentication) throws IOException, ServletException {
-                CustomUsersDetails usersDetals= (CustomUsersDetails) authentication.getPrincipal();
-                String JwtToken= jwtTokenService.generateToken(usersDetals);
+                                                Authentication authentication) throws IOException {
+                CustomUsersDetails userDetails = (CustomUsersDetails) authentication.getPrincipal();
+                String jwtToken = jwtTokenService.generateToken(userDetails);
+
                 response.setStatus(HttpStatus.OK.value());
                 response.setContentType("application/json;charset=UTF-8");
-                String responseBody=String.format(
+                String responseBody = String.format(
                         "{\"message\":\"Login Successful\", \"token\":\"%s\", \"user\": {\"id\":\"%s\", \"email\":\"%s\", \"username\":\"%s\"}}",
-                        JwtToken,
-                        usersDetals.getUserId(),
-                        usersDetals.getUserEmail(),
-                        usersDetals.getUsername()
+                        jwtToken,
+                        userDetails.getUserId(),
+                        userDetails.getUserEmail(),
+                        userDetails.getUsername()
                 );
                 response.getWriter().write(responseBody);
             }
@@ -309,9 +319,10 @@ public class SecurityConfigurations {
             }
         };
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        System.out.println("REQUEST RECEIVED SPRING SECURITY CORS");
+        System.out.println("Loading CORS configuration");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
@@ -322,13 +333,15 @@ public class SecurityConfigurations {
                 "https://backend-railway-production-8bf7.up.railway.app"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList( "Authorization",
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
                 "Content-Type",
                 "X-Requested-With",
                 "Accept",
                 "Origin",
                 "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"));
+                "Access-Control-Request-Headers"
+        ));
         configuration.setExposedHeaders(Arrays.asList(
                 "Authorization",
                 "Content-Type"
