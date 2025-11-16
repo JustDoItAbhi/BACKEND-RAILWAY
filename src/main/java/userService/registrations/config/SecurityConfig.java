@@ -1,15 +1,71 @@
-package userService.registrations.config;
-
-public class SecurityConfig {
-
-
+//package userService.registrations.config;
+//
+//import com.nimbusds.jose.jwk.JWKSet;
+//import com.nimbusds.jose.jwk.RSAKey;
+//import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+//import com.nimbusds.jose.jwk.source.JWKSource;
+//import com.nimbusds.jose.proc.SecurityContext;
+//import jakarta.servlet.ServletException;
+//import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletResponse;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.core.annotation.Order;
+//import org.springframework.http.HttpRequest;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.MediaType;
+//import org.springframework.http.client.ClientHttpRequestExecution;
+//import org.springframework.http.client.ClientHttpRequestInterceptor;
+//import org.springframework.http.client.ClientHttpResponse;
+//import org.springframework.security.config.Customizer;
+//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.http.SessionCreationPolicy;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.AuthenticationException;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.oauth2.jwt.Jwt;
+//import org.springframework.security.oauth2.jwt.JwtDecoder;
+//import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+//import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+//import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+//import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+//import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+//import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+//import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+//import org.springframework.security.web.SecurityFilterChain;
+//import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+//import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+//import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+//import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+//import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+//import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+//import org.springframework.web.cors.CorsConfiguration;
+//import org.springframework.web.cors.CorsConfigurationSource;
+//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+//import userService.registrations.security.customization.CustomUsersDetails;
+//
+//import java.io.IOException;
+//import java.security.KeyPair;
+//import java.security.KeyPairGenerator;
+//import java.security.interfaces.RSAPrivateKey;
+//import java.security.interfaces.RSAPublicKey;
+//import java.util.Arrays;
+//import java.util.List;
+//import java.util.UUID;
+//
+//@Configuration
+//@EnableWebSecurity
+//public class SecurityConfig {
+//
 //    private final KeyPair keyPair;
 //
 //    public SecurityConfig() {
 //        this.keyPair = generateRsaKey();
 //    }
-
-    // Make the key pair available as beans
+//
+//    // Make the key pair available as beans
 //    @Bean
 //    public KeyPair keyPair() {
 //        return keyPair;
@@ -24,7 +80,7 @@ public class SecurityConfig {
 //    public RSAPrivateKey rsaPrivateKey() {
 //        return (RSAPrivateKey) keyPair.getPrivate();
 //    }
-
+//
 //    @Bean
 //    public JwtTokenService jwtTokenService(RSAPrivateKey privateKey) {
 //        return new JwtTokenService(privateKey);
@@ -49,10 +105,9 @@ public class SecurityConfig {
 //
 //        http
 //                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-//                .cors(withDefaults())
 //                .with(authorizationServerConfigurer, (authorizationServer) ->
 //                        authorizationServer
-//                                .oidc(withDefaults())    // Enable OpenID Connect 1.0
+//                                .oidc(Customizer.withDefaults())	// Enable OpenID Connect 1.0
 //                )
 //                .authorizeHttpRequests((authorize) ->
 //                        authorize
@@ -60,9 +115,6 @@ public class SecurityConfig {
 //                )
 //                // Redirect to the login page when not authenticated from the
 //                // authorization endpoint
-////                .oauth2Login(oauth->
-////                        oauth.defaultSuccessUrl("/hello",true))
-//
 //                .exceptionHandling((exceptions) -> exceptions
 //                        .defaultAuthenticationEntryPointFor(
 //                                new LoginUrlAuthenticationEntryPoint("/login"),
@@ -72,17 +124,12 @@ public class SecurityConfig {
 //
 //        return http.build();
 //    }
-//
 //    @Bean
 //    @Order(2)
 //    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
 //            throws Exception {
-//
-//        System.out.println("REQUEST RECEIVED PERMISSIONS");
 //        http
 //                .csrf().disable()
-//
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 //                .authorizeHttpRequests((authorize) -> authorize
 //                        .requestMatchers(
 //
@@ -90,18 +137,12 @@ public class SecurityConfig {
 //                                "/api/auth/**",
 //                                "/oauth2/**",
 //                                "/api/user/me",
-//                                "/.well-known/**",
-//                                "/error",
 //                                "/client/register",
-//                                "/client/updateRegisterClient/**",
 //                                "/api/user/createUser",
 //                                "/roles/createRole",
-//                                "/api/debug/cors",
-//                                "/api/user/StudentSignUp",
-//                                "/api/user/allUsers"
+//                                "/api/user/StudentSignUp"
 //                        ).permitAll()
 //                        .requestMatchers("/api/user/ConfirmStudentSignUp/otp/**").permitAll()
-//                        .requestMatchers("/api/subject/").permitAll()
 //                        .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
 //                        .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
 //
@@ -109,13 +150,11 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/user/session-info").authenticated()
 //                        .anyRequest().authenticated()
 //                )
-//
+//                // Form login handles the redirect to the login page from the
+//                // authorization server filter chain
 //                .oauth2ResourceServer(oauth2 -> oauth2
 //                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
 //                )
-//
-////                .oauth2Login(oauth->oauth.defaultSuccessUrl("/hello",true));
-//
 ////                .formLogin(withDefaults());
 //                .formLogin(form->form
 //                        .loginProcessingUrl("/api/auth/login")
@@ -126,15 +165,13 @@ public class SecurityConfig {
 //                        .permitAll())
 //                .logout(logout->logout.logoutUrl("/auth/auth/logout")
 //                        .logoutSuccessHandler(logoutSuccessHandler())
-//                                .permitAll())
-//                        .sessionManagement(session->session
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//
-//
+//                        .permitAll()
+//                )
+//                .sessionManagement(session->session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 //
 //        return http.build();
 //    }
-//
 //
 //    @Bean
 //    public AuthenticationSuccessHandler authenticationSuccessHandler(JwtTokenService jwtTokenService){
@@ -144,19 +181,17 @@ public class SecurityConfig {
 //                                                HttpServletResponse response,
 //                                                Authentication authentication) throws IOException, ServletException {
 //                CustomUsersDetails usersDetals= (CustomUsersDetails) authentication.getPrincipal();
-//             String JwtToken= jwtTokenService.generateToken(usersDetals);
-//
-//             response.setStatus(HttpStatus.OK.value());
-//
+//                String JwtToken= jwtTokenService.generateToken(usersDetals);
+//                response.setStatus(HttpStatus.OK.value());
 //                response.setContentType("application/json;charset=UTF-8");
-//             String responseBody=String.format(
-//                     "{\"message\":\"Login Successful\", \"token\":\"%s\", \"user\": {\"id\":\"%s\", \"email\":\"%s\", \"username\":\"%s\"}}",
-//                     JwtToken,
-//                     usersDetals.getUserId(),
-//                     usersDetals.getUserEmail(),
-//                     usersDetals.getUsername()
-//                     );
-//             response.getWriter().write(responseBody);
+//                String responseBody=String.format(
+//                        "{\"message\":\"Login Successful\", \"token\":\"%s\", \"user\": {\"id\":\"%s\", \"email\":\"%s\", \"username\":\"%s\"}}",
+//                        JwtToken,
+//                        usersDetals.getUserId(),
+//                        usersDetals.getUserEmail(),
+//                        usersDetals.getUsername()
+//                );
+//                response.getWriter().write(responseBody);
 //            }
 //        };
 //    }
@@ -168,21 +203,6 @@ public class SecurityConfig {
 //            response.getWriter().write("{\"message\": \"Logout successful\"}");
 //        };
 //    }
-//
-//
-////    @Bean
-////    public AuthenticationFailureHandler authenticationFailureHandler() {
-////        return new SimpleUrlAuthenticationFailureHandler() {
-////            @Override
-////            public void onAuthenticationFailure(HttpServletRequest request,
-////                                                HttpServletResponse response,
-////                                                AuthenticationException exception) throws IOException {
-////                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-////                response.getWriter().write("{\"error\": \"Invalid credentials\"}");
-////            }
-////        };
-////    }
-//
 //
 //    @Bean
 //    public AuthenticationFailureHandler authenticationFailureHandler() {
@@ -199,28 +219,14 @@ public class SecurityConfig {
 //
 //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {
-//        System.out.println("REQUEST RECEIVED SPRING SECURITY CORS");
 //        CorsConfiguration configuration = new CorsConfiguration();
 //        configuration.setAllowedOrigins(Arrays.asList(
 //                "http://localhost:5173",
 //                "http://127.0.0.1:5173",
-//                "https://oauth.pstmn.io",
-//                "https://unvocalized-irretrievably-roman.ngrok-free.dev",
-//                "https://scpms-frontend.onrender.com",
-//                "https://backend-railway-production-8bf7.up.railway.app/"
+//                "https://oauth.pstmn.io"
 //        ));
 //        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(Arrays.asList( "Authorization",
-//                "Content-Type",
-//                "X-Requested-With",
-//                "Accept",
-//                "Origin",
-//                "Access-Control-Request-Method",
-//                "Access-Control-Request-Headers"));
-//        configuration.setExposedHeaders(Arrays.asList(
-//                "Authorization",
-//                "Content-Type"
-//        ));
+//        configuration.setAllowedHeaders(Arrays.asList("*"));
 //        configuration.setAllowCredentials(true);
 //        configuration.setMaxAge(3600L);
 //
@@ -228,8 +234,7 @@ public class SecurityConfig {
 //        source.registerCorsConfiguration("/**", configuration);
 //        return source;
 //    }
-
-
+//
 //    @Bean
 //    public JwtAuthenticationConverter jwtAuthenticationConverter() {
 //        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -240,20 +245,20 @@ public class SecurityConfig {
 //        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
 //        return jwtAuthenticationConverter;
 //    }
-
-//    @Bean
-//    public JWKSource<SecurityContext> jwkSource() {
-//        KeyPair keyPair = generateRsaKey();
-//        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-//        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-//        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-//                .privateKey(privateKey)
-//                .keyID(UUID.randomUUID().toString())
-//                .build();
-//        JWKSet jwkSet = new JWKSet(rsaKey);
-//        return new ImmutableJWKSet<>(jwkSet);
-//    }
-
+//
+////    @Bean
+////    public JWKSource<SecurityContext> jwkSource() {
+////        KeyPair keyPair = generateRsaKey();
+////        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+////        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+////        RSAKey rsaKey = new RSAKey.Builder(publicKey)
+////                .privateKey(privateKey)
+////                .keyID(UUID.randomUUID().toString())
+////                .build();
+////        JWKSet jwkSet = new JWKSet(rsaKey);
+////        return new ImmutableJWKSet<>(jwkSet);
+////    }
+//
 //    private  KeyPair generateRsaKey() {
 //        KeyPair keyPair;
 //        try {
@@ -265,7 +270,7 @@ public class SecurityConfig {
 //        }
 //        return keyPair;
 //    }
-
+//
 //    @Bean
 //    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
 //        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
@@ -304,4 +309,4 @@ public class SecurityConfig {
 //            return execution.execute(request, body);
 //        }
 //    }
-}
+//}

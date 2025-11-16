@@ -98,30 +98,23 @@ public class SecurityConfigurations {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
+            throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                new OAuth2AuthorizationServerConfigurer();
+                OAuth2AuthorizationServerConfigurer.authorizationServer();
 
         http
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .cors(Customizer.withDefaults())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
-                                .oidc(Customizer.withDefaults())
+                                .oidc(Customizer.withDefaults())	// Enable OpenID Connect 1.0
                 )
-                .authorizeHttpRequests(authz -> authz
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests((authorize) ->
+                        authorize
+                                .anyRequest().authenticated()
                 )
-                // ADD FORM LOGIN TO AUTHORIZATION SERVER
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/api/auth/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .successHandler(authenticationSuccessHandler())
-                        .failureHandler(authenticationFailureHandler())
-                        .permitAll()
-                )
+                // Redirect to the login page when not authenticated from the
+                // authorization endpoint
                 .exceptionHandling((exceptions) -> exceptions
                         .defaultAuthenticationEntryPointFor(
                                 new LoginUrlAuthenticationEntryPoint("/login"),
