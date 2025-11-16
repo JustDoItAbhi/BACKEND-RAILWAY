@@ -1,14 +1,10 @@
 package userService.registrations.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
@@ -24,7 +20,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://127.0.0.1:5173");
         config.addAllowedOrigin("https://unvocalized-irretrievably-roman.ngrok-free.dev");
         config.addAllowedOrigin("https://scpms-frontend.onrender.com");
-        config.addAllowedOrigin("https://backend-railway-production-30b6.up.railway.app");
+        config.addAllowedOrigin("https://backend-railway-production-8bf7.up.railway.app");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
