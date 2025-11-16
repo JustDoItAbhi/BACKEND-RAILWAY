@@ -72,20 +72,38 @@ public class SubjectServiceImpl implements SubjectService{
     @Override
     public List<SubjectResponseDto> transferAllListOfStubjecsFromCsvFile(MultipartFile file) throws IOException {
         List<SubjectResponseDto>responseDtos=new ArrayList<>();
-        try(Reader reader=new BufferedReader((new InputStreamReader(file.getInputStream())))){
-            CSVReader csvReader=new CSVReader(reader);
-            List<String[]>records=csvReader.readAll();
-            if(records.isEmpty()){
-                throw new UserExceptions("unable to read data");
+        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            CSVReader csvReader = new CSVReader(reader);
+            List<String[]> records = csvReader.readAll();
+
+            if (records.isEmpty()) {
+                throw new UserExceptions("Unable to read data from CSV file");
             }
 
-            for(int i=0;i<records.size();i++){
-                String[] row=records.get(i);
-                Subjects subjects=new Subjects();
-                subjects.setCourseYear(row[3]);
-                subjects.setSubject(row[4]);
-                subjectRepository.save(subjects);
-                responseDtos.add(fromEntity(subjects));
+            // Skip header row if it exists
+            int startIndex = 0;
+            if (records.get(0)[0].equals("created_at") || records.get(0)[0].matches(".*[a-zA-Z].*")) {
+                startIndex = 1; // Skip header row
+            }
+
+            for (int i = startIndex; i < records.size(); i++) {
+                String[] row = records.get(i);
+
+                // Debug: Print the row to see what data you're getting
+                System.out.println("Processing row: " + String.join(", ", row));
+
+                // Based on your sample data, adjust indices accordingly
+                // Your sample: "1 56:56.2 56:56.2 1st LATIN LANGUAGE & MEDICAL TERMINOLOGY"
+                if (row.length >= 5) {
+                    Subjects subjects = new Subjects();
+                    subjects.setCourseYear(row[3].trim()); // "1st"
+                    subjects.setSubject(row[4].trim()); // "LATIN LANGUAGE & MEDICAL TERMINOLOGY"
+
+                    subjectRepository.save(subjects);
+                    responseDtos.add(fromEntity(subjects));
+                } else {
+                    System.err.println("Skipping row " + i + ": insufficient columns. Found: " + row.length);
+                }
             }
 
         } catch (CsvException e) {
