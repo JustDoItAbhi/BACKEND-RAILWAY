@@ -130,7 +130,7 @@ public class SecurityConfigurations {
     // FIXED: Local mode should use form login (default)
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local", matchIfMissing = true)
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production", matchIfMissing = true)
     public SecurityFilterChain localSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading LOCAL security configuration (Form Login + OAuth2 Resource Server)");
         return buildFormLoginSecurity(http);
@@ -138,11 +138,46 @@ public class SecurityConfigurations {
 
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production")
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local")
     public SecurityFilterChain productionSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading PRODUCTION security configuration (OAuth2 Resource Server Only)");
-        return buildOAuth2Security(http);
+        return buildOAuth2SecurityForLocal(http);
     }
+
+    private SecurityFilterChain buildOAuth2SecurityForLocal(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(
+                                "/login",
+                                "/api/auth/**",
+                                "/oauth2/**",
+                                "/api/user/me",
+                                "/.well-known/**",
+                                "/error",
+                                "/client/register",
+                                "/client/updateRegisterClient/**",
+                                "/api/user/createUser",
+                                "/roles/createRole",
+                                "/api/debug/cors",
+                                "/api/user/StudentSignUp",
+                                "/api/user/allUsers",
+                                "/api/user/ConfirmStudentSignUp/otp/**",
+                                "/api/subject/**"
+                        ).permitAll()
+                        .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
+                        .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
+                        .requestMatchers("/api/user/session-info").authenticated()
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                )
+                .formLogin(withDefaults());
+        return http.build();
+    }
+
 
     private SecurityFilterChain buildFormLoginSecurity(HttpSecurity http) throws Exception {
         http
@@ -175,7 +210,6 @@ public class SecurityConfigurations {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-////                .formLogin(withDefaults());
                 .formLogin(form->form
                         .loginProcessingUrl("/api/auth/login")
                         .usernameParameter("email")
@@ -193,39 +227,6 @@ public class SecurityConfigurations {
         return http.build();
     }
 
-    private SecurityFilterChain buildOAuth2Security(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(
-
-                                "/login",
-                                "/api/auth/**",
-                                "/oauth2/**",
-                                "/api/user/me",
-                                "/client/register",
-                                "/api/user/createUser",
-                                "/roles/createRole",
-                                "/api/user/StudentSignUp"
-                        ).permitAll()
-                        .requestMatchers("/api/user/ConfirmStudentSignUp/otp/**").permitAll()
-                        .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
-                        .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
-
-                        .requestMatchers("/api/user/createUser").permitAll()
-                        .requestMatchers("/api/user/session-info").authenticated()
-                        .anyRequest().authenticated()
-                )
-                // Form login handles the redirect to the login page from the
-                // authorization server filter chain
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                )
-                .formLogin(withDefaults());
-
-
-        return http.build();
-    }
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
