@@ -32,6 +32,10 @@ public class SubjectController {
     @PostMapping("/upload")
     public ResponseEntity<List<SubjectResponseDto>> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
             return ResponseEntity.ok(subjectService.transferAllListOfStubjecsFromCsvFile(file));
+    }
+    @GetMapping("/")
+    public ResponseEntity<List<SubjectResponseDto>> getAllSubjects()  {
+        return ResponseEntity.ok(subjectService.getAllSubjects());
 
     }
 }
