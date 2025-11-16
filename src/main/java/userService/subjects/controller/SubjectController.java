@@ -9,6 +9,7 @@ import userService.subjects.dtos.SubjectRequestDto;
 import userService.subjects.dtos.SubjectResponseDto;
 import userService.subjects.servie.SubjectService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,13 +30,8 @@ public class SubjectController {
         return ResponseEntity.ok(subjectService.updateSubject(subjectId,dto));
     }
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
-            subjectService.transferAllListOfStubjecsFromCsvFile(file);
-            return ResponseEntity.ok("CSV Imported Successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<List<SubjectResponseDto>> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+            return ResponseEntity.ok(subjectService.transferAllListOfStubjecsFromCsvFile(file));
+
     }
 }

@@ -75,6 +75,10 @@ public class SubjectServiceImpl implements SubjectService{
         try(Reader reader=new BufferedReader((new InputStreamReader(file.getInputStream())))){
             CSVReader csvReader=new CSVReader(reader);
             List<String[]>records=csvReader.readAll();
+            if(records.isEmpty()){
+                throw new UserExceptions("unable to read data");
+            }
+
             for(int i=0;i<records.size();i++){
                 String[] row=records.get(i);
                 Subjects subjects=new Subjects();
@@ -85,6 +89,7 @@ public class SubjectServiceImpl implements SubjectService{
             }
 
         } catch (CsvException e) {
+
             throw new RuntimeException(e);
         }
         return responseDtos;
