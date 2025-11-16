@@ -82,8 +82,8 @@ public class SubjectServiceImpl implements SubjectService{
             for(int i=0;i<records.size();i++){
                 String[] row=records.get(i);
                 Subjects subjects=new Subjects();
-                subjects.setCourseYear(row[1]);
-                subjects.setSubject(row[2]);
+                subjects.setCourseYear(row[3]);
+                subjects.setSubject(row[4]);
                 subjectRepository.save(subjects);
                 responseDtos.add(fromEntity(subjects));
             }
