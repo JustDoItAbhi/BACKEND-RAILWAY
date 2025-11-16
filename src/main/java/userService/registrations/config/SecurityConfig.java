@@ -179,19 +179,19 @@ public class SecurityConfig {
 
 //                .oauth2Login(oauth->oauth.defaultSuccessUrl("/hello",true));
 
-//                .formLogin(withDefaults());
-                .formLogin(form->form
-                        .loginProcessingUrl("/api/auth/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
-                        .failureHandler(authenticationFailureHandler())
-                        .permitAll())
-                .logout(logout->logout.logoutUrl("/auth/auth/logout")
-                        .logoutSuccessHandler(logoutSuccessHandler())
-                                .permitAll())
-                        .sessionManagement(session->session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .formLogin(withDefaults());
+//                .formLogin(form->form
+//                        .loginProcessingUrl("/api/auth/login")
+//                        .usernameParameter("email")
+//                        .passwordParameter("password")
+//                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
+//                        .failureHandler(authenticationFailureHandler())
+//                        .permitAll())
+//                .logout(logout->logout.logoutUrl("/auth/auth/logout")
+//                        .logoutSuccessHandler(logoutSuccessHandler())
+//                                .permitAll())
+//                        .sessionManagement(session->session
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
 
