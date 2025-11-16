@@ -1,8 +1,10 @@
 package userService.subjects.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import userService.subjects.dtos.SubjectRequestDto;
 import userService.subjects.dtos.SubjectResponseDto;
 import userService.subjects.servie.SubjectService;
@@ -25,5 +27,15 @@ public class SubjectController {
     @PutMapping("/updateSubject/{subjectId}")
     public ResponseEntity<SubjectResponseDto>findBYyEAR(@PathVariable ("subjectId")long subjectId,@RequestBody SubjectRequestDto dto){
         return ResponseEntity.ok(subjectService.updateSubject(subjectId,dto));
+    }
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            subjectService.transferAllListOfStubjecsFromCsvFile(file);
+            return ResponseEntity.ok("CSV Imported Successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
     }
 }

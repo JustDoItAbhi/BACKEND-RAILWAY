@@ -1,13 +1,20 @@
 package userService.subjects.servie;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import userService.registrations.exceptions.UserExceptions;
 import userService.subjects.Subjects;
 import userService.subjects.dtos.SubjectRequestDto;
 import userService.subjects.dtos.SubjectResponseDto;
 import userService.subjects.repo.SubjectRepository;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +67,27 @@ public class SubjectServiceImpl implements SubjectService{
         subject.setCourseYear(dto.getCourseYear());
         subjectRepository.save(subject);
         return fromEntity(subject);
+    }
+
+    @Override
+    public List<SubjectResponseDto> transferAllListOfStubjecsFromCsvFile(MultipartFile file) throws IOException {
+        List<SubjectResponseDto>responseDtos=new ArrayList<>();
+        try(Reader reader=new BufferedReader((new InputStreamReader(file.getInputStream())))){
+            CSVReader csvReader=new CSVReader(reader);
+            List<String[]>records=csvReader.readAll();
+            for(int i=0;i<records.size();i++){
+                String[] row=records.get(i);
+                Subjects subjects=new Subjects();
+                subjects.setCourseYear(row[1]);
+                subjects.setSubject(row[2]);
+                subjectRepository.save(subjects);
+                responseDtos.add(fromEntity(subjects));
+            }
+
+        } catch (CsvException e) {
+            throw new RuntimeException(e);
+        }
+        return responseDtos;
     }
 
 

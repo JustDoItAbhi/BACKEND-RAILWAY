@@ -10,7 +10,7 @@ public class DebugController {
 
     @GetMapping("/api/debug/cors")
     public String debugCors(HttpServletResponse response) {
-        response.addHeader("Access-Control-Allow-Origin", "https://unvocalized-irretrievably-roman.ngrok-free.dev");
+        response.addHeader("Access-Control-Allow-Origin", "https://backend-railway-production-30b6.up.railway.app");
         return "CORS Debug - Headers should be set";
     }
 }
