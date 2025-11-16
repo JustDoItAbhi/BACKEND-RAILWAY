@@ -161,7 +161,7 @@ public class SecurityConfig {
                                 "/api/user/allUsers"
                         ).permitAll()
                         .requestMatchers("/api/user/ConfirmStudentSignUp/otp/**").permitAll()
-                        .requestMatchers("/api/subject/")
+                        .requestMatchers("/api/subject/").permitAll()
                         .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
                         .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
 
