@@ -125,21 +125,21 @@ public class SecurityConfigurations {
 
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local", matchIfMissing = true)
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production", matchIfMissing = true)
     public SecurityFilterChain localSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading LOCAL security configuration (Form Login + OAuth2 Resource Server)");
-        return buildFormLoginSecurity(http);
+        return buildProductionLoginSecurity(http);
     }
 
     @Bean
     @Order(2)
-    @ConditionalOnProperty(name = "app.security.mode", havingValue = "production")
+    @ConditionalOnProperty(name = "app.security.mode", havingValue = "local")
     public SecurityFilterChain productionSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Loading PRODUCTION security configuration (OAuth2 Resource Server Only)");
         return buildOAuth2Security(http);
     }
 
-    private SecurityFilterChain buildFormLoginSecurity(HttpSecurity http) throws Exception {
+    private SecurityFilterChain buildProductionLoginSecurity(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
@@ -223,10 +223,10 @@ public class SecurityConfigurations {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                .formLogin(Customizer.withDefaults())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                .formLogin(Customizer.withDefaults());
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                );
 
         return http.build();
     }
