@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,9 +83,10 @@ public class SecurityConfigurations {
     }
 
     @Bean
-    public JwtTokenService jwtTokenService() {
-        return new JwtTokenService(rsaPrivateKey());
+    public JwtTokenService jwtTokenService(RSAPrivateKey privateKey) {
+        return new JwtTokenService(privateKey);
     }
+
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
@@ -167,26 +169,18 @@ public class SecurityConfigurations {
                         .anyRequest().authenticated()
                 )
                 // Form Login for local development (generates JWT tokens)
-                .formLogin(form -> form
+                .formLogin(form->form
                         .loginProcessingUrl("/api/auth/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .successHandler(authenticationSuccessHandler())
+                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
                         .failureHandler(authenticationFailureHandler())
-                        .permitAll()
-                )
-                // OAuth2 Resource Server to validate JWT tokens
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")
+                        .permitAll())
+                .logout(logout->logout.logoutUrl("/auth/auth/logout")
                         .logoutSuccessHandler(logoutSuccessHandler())
-                        .permitAll()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                                .permitAll())
+                        .sessionManagement(session->session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
@@ -219,7 +213,7 @@ public class SecurityConfigurations {
                         .requestMatchers("/api/user/session-info").authenticated()
                         .anyRequest().authenticated()
                 )
-                // Production - Only OAuth2 Resource Server (no form login)
+                //
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
@@ -257,24 +251,22 @@ public class SecurityConfigurations {
     }
 
     @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+    public AuthenticationSuccessHandler authenticationSuccessHandler(JwtTokenService jwtTokenService) {
         return new AuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request,
                                                 HttpServletResponse response,
-                                                Authentication authentication) throws IOException {
-                CustomUsersDetails userDetails = (CustomUsersDetails) authentication.getPrincipal();
-                JwtTokenService tokenService = jwtTokenService();
-                String jwtToken = tokenService.generateToken(userDetails);
-
+                                                Authentication authentication) throws IOException, ServletException {
+                CustomUsersDetails usersDetals= (CustomUsersDetails) authentication.getPrincipal();
+                String JwtToken= jwtTokenService.generateToken(usersDetals);
                 response.setStatus(HttpStatus.OK.value());
                 response.setContentType("application/json;charset=UTF-8");
-                String responseBody = String.format(
+                String responseBody=String.format(
                         "{\"message\":\"Login Successful\", \"token\":\"%s\", \"user\": {\"id\":\"%s\", \"email\":\"%s\", \"username\":\"%s\"}}",
-                        jwtToken,
-                        userDetails.getUserId(),
-                        userDetails.getUserEmail(),
-                        userDetails.getUsername()
+                        JwtToken,
+                        usersDetals.getUserId(),
+                        usersDetals.getUserEmail(),
+                        usersDetals.getUsername()
                 );
                 response.getWriter().write(responseBody);
             }

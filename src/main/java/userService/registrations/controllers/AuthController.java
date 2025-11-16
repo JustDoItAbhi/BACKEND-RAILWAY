@@ -6,15 +6,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "https://backend-railway-production-49cf.up.railway.app", allowCredentials = "true")
+@CrossOrigin(origins = "https://backend-railway-production-8bf7.up.railway.app", allowCredentials = "true")
 public class AuthController {
 //    @PostMapping("/login")
 //    public ResponseEntity<?> login(@RequestParam String email,

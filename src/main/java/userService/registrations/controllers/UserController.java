@@ -2,7 +2,6 @@ package userService.registrations.controllers;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "https://backend-railway-production-49cf.up.railway.app", allowCredentials = "true")
+@CrossOrigin(origins = "https://backend-railway-production-8bf7.up.railway.app", allowCredentials = "true")
 public class UserController {
     @Autowired
     private UserService userService;
