@@ -214,6 +214,7 @@ public class SecurityConfigurations {
                                 "/api/subject/**"
                         ).permitAll()
                         .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
+                        .requestMatchers("/api/user/createUser").permitAll()
                         .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
                         .requestMatchers("/api/user/session-info").authenticated()
                         .anyRequest().authenticated()
