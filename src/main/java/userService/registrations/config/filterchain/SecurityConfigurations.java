@@ -191,7 +191,7 @@ public class SecurityConfigurations {
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout") // FIXED: was "/auth/auth/logout"
+                        .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(logoutSuccessHandler())
                         .permitAll()
                 )
@@ -234,10 +234,6 @@ public class SecurityConfigurations {
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
                 .formLogin(Customizer.withDefaults());
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                );
-
         return http.build();
     }
 
