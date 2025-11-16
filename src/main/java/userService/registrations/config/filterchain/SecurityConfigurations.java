@@ -51,6 +51,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
@@ -134,7 +136,6 @@ public class SecurityConfigurations {
         return buildFormLoginSecurity(http);
     }
 
-    // FIXED: Production mode should use OAuth2 only
     @Bean
     @Order(2)
     @ConditionalOnProperty(name = "app.security.mode", havingValue = "production")
@@ -171,62 +172,58 @@ public class SecurityConfigurations {
                         .anyRequest().authenticated()
                 )
                 // Form Login for local development
-                .formLogin(form -> form
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                )
+////                .formLogin(withDefaults());
+                .formLogin(form->form
                         .loginProcessingUrl("/api/auth/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .successHandler(authenticationSuccessHandler())
                         .failureHandler(authenticationFailureHandler())
-                        .permitAll()
-                )
-                // OAuth2 Resource Server to validate JWT tokens
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")
+                        .permitAll())
+                .logout(logout->logout.logoutUrl("/auth/auth/logout")
                         .logoutSuccessHandler(logoutSuccessHandler())
                         .permitAll()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                .sessionManagement(session->session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
 
     private SecurityFilterChain buildOAuth2Security(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(authz -> authz
+                .csrf().disable()
+                .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(
+
                                 "/login",
                                 "/api/auth/**",
                                 "/oauth2/**",
                                 "/api/user/me",
-                                "/.well-known/**",
-                                "/error",
                                 "/client/register",
-                                "/client/updateRegisterClient/**",
                                 "/api/user/createUser",
                                 "/roles/createRole",
-                                "/api/debug/cors",
-                                "/api/user/StudentSignUp",
-                                "/api/user/allUsers",
-                                "/api/user/ConfirmStudentSignUp/otp/**",
-                                "/api/subject/**"
+                                "/api/user/StudentSignUp"
                         ).permitAll()
+                        .requestMatchers("/api/user/ConfirmStudentSignUp/otp/**").permitAll()
                         .requestMatchers("/api/teachers/finishSignUP/{id}").hasRole("TEACHER")
                         .requestMatchers("/api/students/completeStundentSignUp/{stId}").hasRole("STUDENT")
+
+                        .requestMatchers("/api/user/createUser").permitAll()
                         .requestMatchers("/api/user/session-info").authenticated()
                         .anyRequest().authenticated()
                 )
-                // Production - Only OAuth2 Resource Server (NO form login)
+                // Form login handles the redirect to the login page from the
+                // authorization server filter chain
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                .formLogin(Customizer.withDefaults());
+                .formLogin(withDefaults());
+
+
         return http.build();
     }
 
