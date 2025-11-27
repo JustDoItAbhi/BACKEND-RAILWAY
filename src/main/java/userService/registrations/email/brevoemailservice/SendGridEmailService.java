@@ -7,16 +7,14 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import userService.registrations.email.iEmailService;
 
 @Service
-@Primary
+//@Primary
 public class SendGridEmailService implements iEmailService {
 
-    @Value("${sendgrid.api.key}")
+//    @Value("${sendgrid.api.key}")
     private String apiKey;
 
 
