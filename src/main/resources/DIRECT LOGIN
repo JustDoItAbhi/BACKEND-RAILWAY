@@ -1,0 +1,10 @@
+Flow 2: Direct Form Login (Traditional Login)
+1. User enters email/password in your React form
+
+2. Frontend sends credentials directly
+   → Calls: /api/auth/login with email/password
+
+3. Backend validates and returns JWT token
+   → Returns: {token: "jwt_token", user: {...}}
+
+4. Frontend uses token for API calls
