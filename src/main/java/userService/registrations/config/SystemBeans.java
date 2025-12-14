@@ -1,6 +1,5 @@
 package userService.registrations.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,8 +10,8 @@ public class SystemBeans {
     public BCryptPasswordEncoder PasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
-        @Value("${sendgrid.api.key}")
-        private String sendGridApiKey;
+//        @Value("${sendgrid.api.key}")
+//        private String sendGridApiKey;
 
 //    @Bean
 //    @ConditionalOnProperty(name = "sendgrid.api.key")
