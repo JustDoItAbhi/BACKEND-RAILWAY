@@ -1,0 +1,11 @@
+.git
+.gitignore
+target/
+*.log
+*.class
+*.jar
+.DS_Store
+.idea
+.vscode
+.mvn/wrapper/maven-wrapper.properties
+**/node_modules
