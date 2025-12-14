@@ -1,33 +1,27 @@
-# Build stage
-FROM maven:3.9.6-eclipse-temurin-17 AS build
-WORKDIR /app
+# Stage 1: Build
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 
-# Copy Maven files first (for better caching)
+WORKDIR /build
+
+# Copy pom.xml first for layer caching
 COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
 
-# Download dependencies (cached unless pom.xml changes)
-RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline -B
+# Download dependencies
+RUN mvn dependency:go-offline -B
 
 # Copy source code
-COPY src src
+COPY src ./src
 
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Run stage
+# Stage 2: Runtime
 FROM eclipse-temurin:17-jre
+
 WORKDIR /app
 
-# Copy built JAR from build stage
-COPY --from=build /app/target/*.jar app.jar
-
-# Create non-root user for security
-RUN addgroup --system --gid 1001 appgroup && \
-    adduser --system --uid 1001 --gid 1001 appuser
-USER appuser
+# Copy the JAR file
+COPY --from=builder /build/target/*.jar app.jar
 
 # Expose port
 EXPOSE 8080
