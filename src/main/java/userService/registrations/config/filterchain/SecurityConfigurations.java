@@ -325,7 +325,7 @@ public class SecurityConfigurations {
                 "https://oauth.pstmn.io",
                 "https://unvocalized-irretrievably-roman.ngrok-free.dev",
                 "https://scpms-frontend.onrender.com",
-                "http://scpms-env.eba-pbtypyrj.us-east-1.elasticbeanstalk.com"
+                "https://backend-railway-hka0.onrender.com"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList(

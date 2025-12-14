@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = "https://backend-railway-hka0.onrender.com", allowCredentials = "true")
 public class AuthController {
 
     @GetMapping("/user")
