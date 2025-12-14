@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: your-app-name
+    env: java
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/*.jar"
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+    healthCheckPath: /actuator/health
+    autoDeploy: true
+
+databases:
+  - name: your-app-db
+    databaseName: yourdb
+    user: youruser
+    region: oregon  # or your preferred region

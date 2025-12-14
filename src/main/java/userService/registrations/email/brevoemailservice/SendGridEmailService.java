@@ -1,4 +1,4 @@
-package userService.registrations.email.sendgridemailservice;
+package userService.registrations.email.brevoemailservice;
 
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -7,6 +7,7 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import userService.registrations.email.iEmailService;
 
@@ -14,7 +15,7 @@ import userService.registrations.email.iEmailService;
 //@Primary
 public class SendGridEmailService implements iEmailService {
 
-//    @Value("${sendgrid.api.key}")
+    @Value("${sendgrid.api.key}")
     private String apiKey;
 
 

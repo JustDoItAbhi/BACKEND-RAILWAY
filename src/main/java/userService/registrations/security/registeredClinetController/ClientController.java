@@ -23,6 +23,11 @@ public class ClientController {// registrerd OICD client controller
     public ResponseEntity<RegisteredClient> updateClient(@PathVariable("name")String name, @PathVariable("uid") UUID uid , @RequestBody ClientRequestDto dto){
         return ResponseEntity.ok(service.updateClient(name,uid,dto));
     }
+    @DeleteMapping("delete/{clientId}")
+    public ResponseEntity<Boolean>deleteByID(@PathVariable("clientId")String cleintId){
+        return ResponseEntity.ok(service.deleteClient(cleintId));
+    }
+
 }
 
 // expected response

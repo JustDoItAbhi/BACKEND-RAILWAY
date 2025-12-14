@@ -9,14 +9,13 @@ import userService.registrations.exceptions.UserExceptions;
 import userService.subjects.Subjects;
 import userService.subjects.dtos.SubjectRequestDto;
 import userService.subjects.dtos.SubjectResponseDto;
-import userService.subjects.repo.SubjectRepository;
+import userService.registrations.repos.SubjectRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 

@@ -19,6 +19,7 @@
 //import org.springframework.http.client.ClientHttpResponse;
 //import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.http.SessionCreationPolicy;
 //import org.springframework.security.core.Authentication;
 //import org.springframework.security.core.AuthenticationException;
 //import org.springframework.security.core.GrantedAuthority;
@@ -155,20 +156,20 @@
 //                .oauth2ResourceServer(oauth2 -> oauth2
 //                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
 //                )
-//                .formLogin(withDefaults());
-////                .formLogin(form->form
-////                        .loginProcessingUrl("/api/auth/login")
-////                        .usernameParameter("email")
-////                        .passwordParameter("password")
-////                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
-////                        .failureHandler(authenticationFailureHandler())
-////                        .permitAll())
-////                .logout(logout->logout.logoutUrl("/auth/auth/logout")
-////                        .logoutSuccessHandler(logoutSuccessHandler())
-////                        .permitAll()
-////                )
-////                .sessionManagement(session->session
-////                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+////                .formLogin(withDefaults());
+//                .formLogin(form->form
+//                        .loginProcessingUrl("/api/auth/login")
+//                        .usernameParameter("email")
+//                        .passwordParameter("password")
+//                        .successHandler(authenticationSuccessHandler(jwtTokenService(rsaPrivateKey())))
+//                        .failureHandler(authenticationFailureHandler())
+//                        .permitAll())
+//                .logout(logout->logout.logoutUrl("/auth/auth/logout")
+//                        .logoutSuccessHandler(logoutSuccessHandler())
+//                        .permitAll()
+//                )
+//                .sessionManagement(session->session
+//                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 //
 //        return http.build();
 //    }

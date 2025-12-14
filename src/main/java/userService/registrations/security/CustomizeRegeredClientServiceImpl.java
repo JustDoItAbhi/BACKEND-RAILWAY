@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Service;
 import userService.registrations.exceptions.UserExceptions;
@@ -69,7 +68,7 @@ public class CustomizeRegeredClientServiceImpl implements CustomizeRegeredClient
 
     @Override
     public boolean deleteClient(String clientId) {
-//        jpaRegisteredClientRepository.
+       clientRepository.deleteById(clientId);
         return false;
     }
 

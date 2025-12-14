@@ -10,7 +10,7 @@ public class DebugController {
 
     @GetMapping("/api/debug/cors")
     public String debugCors(HttpServletResponse response) {
-        response.addHeader("Access-Control-Allow-Origin", "https://backend-railway-production-f154.up.railway.app");
+        response.addHeader("Access-Control-Allow-Origin", "http://localhost:5173");
         return "CORS Debug - Headers should be set";
     }
 }

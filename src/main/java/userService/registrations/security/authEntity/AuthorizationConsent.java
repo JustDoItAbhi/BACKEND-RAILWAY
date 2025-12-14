@@ -8,7 +8,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "`authorizationConsent`")
 @IdClass(AuthorizationConsent.AuthorizationConsentId.class)
-public class AuthorizationConsent {// // spring boot oauth2 concent entity
+public class AuthorizationConsent {
     @Id
     private String registeredClientId;
     @Id

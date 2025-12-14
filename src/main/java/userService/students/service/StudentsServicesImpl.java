@@ -18,9 +18,9 @@ import userService.students.studentRepo.StudentSubjectRepo;
 import userService.students.studentRepo.StudentTopicRepo;
 import userService.students.studentRepo.StudentsRepository;
 import userService.subjects.Subjects;
-import userService.subjects.repo.SubjectRepository;
+import userService.registrations.repos.SubjectRepository;
 import userService.teachers.modal.Teachers;
-import userService.teachers.repos.TeacherRepository;
+import userService.registrations.repos.TeacherRepository;
 
 import java.util.List;
 import java.util.Optional;

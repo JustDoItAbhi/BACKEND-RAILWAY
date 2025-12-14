@@ -21,8 +21,9 @@ public class CorsConfig {
         config.addAllowedOrigin("http://127.0.0.1:5173");
         config.addAllowedOrigin("https://unvocalized-irretrievably-roman.ngrok-free.dev");
         config.addAllowedOrigin("https://scpms-frontend.onrender.com");
-        config.addAllowedOrigin("https://backend-railway-production-f154.up.railway.app");
+        config.addAllowedOrigin("http://scpms-env.eba-pbtypyrj.us-east-1.elasticbeanstalk.com");
         config.addAllowedHeader("*");
+        config.addAllowedOrigin("*");
         config.addAllowedMethod("*");
 
         source.registerCorsConfiguration("/**", config);
