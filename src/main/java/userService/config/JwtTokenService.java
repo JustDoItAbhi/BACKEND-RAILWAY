@@ -1,4 +1,4 @@
-package userService.registrations.config;
+package userService.config;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -8,12 +8,12 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import userService.registrations.security.customization.CustomUsersDetails;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
 import java.util.stream.Collectors;
-
 @Service
 public class JwtTokenService {
 

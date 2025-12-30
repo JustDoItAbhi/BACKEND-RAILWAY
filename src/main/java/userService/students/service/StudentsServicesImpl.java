@@ -2,6 +2,7 @@ package userService.students.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import userService.registrations.email.iEmailService;
 import userService.registrations.entities.Users;
 import userService.registrations.exceptions.UserExceptions;
@@ -24,7 +25,7 @@ import userService.registrations.repos.TeacherRepository;
 
 import java.util.List;
 import java.util.Optional;
-
+@Transactional
 @Service
 public class StudentsServicesImpl implements StudentsService{
     @Autowired

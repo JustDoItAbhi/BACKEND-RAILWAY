@@ -1,4 +1,4 @@
-package userService.registrations.config.filterchain;
+package userService.config.filterchain;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -39,7 +39,7 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import userService.registrations.config.JwtTokenService;
+import userService.config.JwtTokenService;
 import userService.registrations.security.customization.CustomUsersDetails;
 
 import java.io.IOException;

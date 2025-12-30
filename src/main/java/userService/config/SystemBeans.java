@@ -1,4 +1,4 @@
-package userService.registrations.config;
+package userService.config;
 
 import com.sendgrid.SendGrid;
 import org.springframework.beans.factory.annotation.Value;

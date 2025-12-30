@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import userService.registrations.security.authEntity.AuthorizationConsent;
@@ -15,7 +16,7 @@ import userService.registrations.security.authRepo.AuthorizationConsentRepositor
 
 import java.util.HashSet;
 import java.util.Set;
-
+@Transactional
 @Component
 public class JpaOAuth2AuthorizationConsentService implements OAuth2AuthorizationConsentService {// authorization server concent implementation
     private final AuthorizationConsentRepository authorizationConsentRepository;

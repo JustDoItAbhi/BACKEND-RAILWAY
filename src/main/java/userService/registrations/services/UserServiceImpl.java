@@ -33,7 +33,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
+@Transactional
 @Service
 public class UserServiceImpl implements UserService{
     @Autowired

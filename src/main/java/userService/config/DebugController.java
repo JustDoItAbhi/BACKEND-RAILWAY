@@ -1,4 +1,4 @@
-package userService.registrations.config;
+package userService.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;

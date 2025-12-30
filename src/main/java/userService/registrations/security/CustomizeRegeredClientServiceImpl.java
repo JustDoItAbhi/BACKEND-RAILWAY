@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import userService.registrations.exceptions.UserExceptions;
 import userService.registrations.security.authEntity.Client;
 import userService.registrations.security.authRepo.ClientRepository;
@@ -19,7 +20,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
+@Transactional
 @Service
 public class CustomizeRegeredClientServiceImpl implements CustomizeRegeredClientService{// oicd registered client implementations
     @Autowired
